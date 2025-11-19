@@ -92,7 +92,7 @@ function rotationChange(rotx, roty, rotz) {
         const force = Math.min(angularSpeed / MAX_SPEED, 1);
 
         // ⚡ Trigger & scale door sound
-        dspNode.setParamValue("/door/position", 1);       // impulse
+        dspNode.setParamValue("/door/door/position", 1);       // impulse
         dspNode.setParamValue("/door/position", force);   // scaled creak
 
         // Debug
@@ -151,7 +151,7 @@ function playAudio(pressure) {
     if (audioContext.state === 'suspended') {
         return;
     }
-    dspNode.setParamValue("/door/position", 0.9);       // impulse
+    dspNode.setParamValue("/door/door/position", 0.9);       // impulse
 }
 
 //==========================================================================================
