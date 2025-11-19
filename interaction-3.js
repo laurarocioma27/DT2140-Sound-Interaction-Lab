@@ -69,7 +69,7 @@ function triggerDoorCreak(force) {
     const pos = 0.05 + force * 0.25;
 
     // short physical-style movement burst
-    dspNode.setParamValue("/door/volume", 0.2)
+    dspNode.setParamValue("/door/volume", 0.7)
     dspNode.setParamValue("/door/door/position", 0);
     setTimeout(() => dspNode.setParamValue("/door/door/position", pos), 10);
     setTimeout(() => dspNode.setParamValue("/door/door/position", pos * 0.5), 40);
