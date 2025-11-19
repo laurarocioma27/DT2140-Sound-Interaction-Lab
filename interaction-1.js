@@ -104,15 +104,15 @@ function deviceMoved() {
 
 function deviceTurned() {
     //threshVals[1] = turnAxis;
-    if (turnAxis === 'Z') {
-    playAudio()
+    //if (turnAxis === 'Z') {
+    //playAudio()
   }
 }
 
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio();
+    //playAudio();
 }
 
 function getMinMaxParam(address) {
