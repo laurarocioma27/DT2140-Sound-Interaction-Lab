@@ -59,7 +59,6 @@ let lastRotY = null;
 let lastTime = null;
 
 // Adjust if your device axis is different
-const DEG = 3.0
 const OPEN_THRESHOLD = 1.0;     // degrees/s – minimum movement to trigger
 const MAX_SPEED = 720;          // deg/s → mapped to force=1
 
@@ -87,7 +86,7 @@ function rotationChange(rotx, roty, rotz) {
     const angularSpeed = Math.abs(deltaY / dt); // deg/s
 
     // Only trigger if moving
-    if (angularSpeed > OPEN_THRESHOLD && (roty > DEG || roty < -DEG)) {
+    if (angularSpeed > OPEN_THRESHOLD) {
 
         const force = Math.min(angularSpeed / MAX_SPEED, 1);
 
