@@ -53,24 +53,36 @@ bells.createDSP(audioContext, 1024).then((node) => {
 //
 //==========================================================================================
 
-function accelerationChange(accx, accy, accz) {
-  const magnitude = Math.sqrt(accx * accx + accy * accy + accz * accz);
+let lastMagnitude = null;
+let dropDetected = false;
 
-  // If below threshold → possible free-fall
-  if (magnitude < FREEFALL_THRESHOLD) {
-    if (freeFallStart === null) {
-      freeFallStart = millis(); // start timer
+function accelerationChange(accx, accy, accz) {
+    if (!dspNode) return;
+
+    const magnitude = Math.sqrt(accx*accx + accy*accy + accz*accz);
+
+    if (lastMagnitude !== null) {
+        const delta = lastMagnitude - magnitude;
+
+        // If magnitude suddenly drops a lot → free fall
+        if (delta > 5 && !dropDetected) { // 5 m/s² drop is a good threshold
+            dropDetected = true;
+            console.log("Drop detected! delta:", delta.toFixed(2));
+
+            dspNode.setParamValue("/bells/gate", 1);
+            dspNode.setParamValue("/bells/volume", 1.0);
+            setTimeout(() => dspNode.setParamValue("/bells/gate", 0), 150);
+        }
     }
-    // If falling long enough → trigger sound
-    else if (millis() - freeFallStart > FREEFALL_TIME) {
-      playAudio(); // ring bell
-      freeFallStart = null; // reset
+
+    // Reset when phone stops moving
+    if (magnitude > 9 && dropDetected) {
+        dropDetected = false;
     }
-  } else {
-    // Not falling anymore → reset
-    freeFallStart = null;
-  }
+
+    lastMagnitude = magnitude;
 }
+
 
 function rotationChange(rotx, roty, rotz) {}
 
