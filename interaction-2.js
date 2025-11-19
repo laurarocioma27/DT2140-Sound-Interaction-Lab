@@ -60,34 +60,30 @@ let dropDetected = false;
 const FREEFALL_DROP = 5;  // sudden drop in m/s² to count as fall
 const MIN_ACCEL = 2;      // magnitude below this counts as free-fall
 
+let impactDetected = false;
+const IMPACT_THRESHOLD = 15; // acceleration in m/s² to count as impact
+
 function accelerationChange(accx, accy, accz) {
     if (!dspNode) return;
 
     const magnitude = Math.sqrt(accx*accx + accy*accy + accz*accz);
 
-    if (lastMagnitude !== null) {
-        const delta = lastMagnitude - magnitude;
+    // Trigger when acceleration spikes above threshold (phone hits something)
+    if (magnitude > IMPACT_THRESHOLD && !impactDetected) {
+        impactDetected = true;
+        console.log("Impact detected! magnitude:", magnitude.toFixed(2));
 
-        // Only trigger if:
-        // 1. sudden drop
-        // 2. acceleration is very low (free-fall)
-        if (delta > FREEFALL_DROP && magnitude < MIN_ACCEL && !dropDetected) {
-            dropDetected = true;
-            console.log("Free fall detected!", "mag:", magnitude.toFixed(2), "delta:", delta.toFixed(2));
-
-            dspNode.setParamValue("/bells/gate", 1);
-            dspNode.setParamValue("/bells/volume", 1.0);
-            setTimeout(() => dspNode.setParamValue("/bells/gate", 0), 150);
-        }
+        dspNode.setParamValue("/bells/gate", 1);
+        dspNode.setParamValue("/bells/volume", 1.0);
+        setTimeout(() => dspNode.setParamValue("/bells/gate", 0), 150);
     }
 
-    // Reset when phone is stable again
-    if (magnitude > 9 && dropDetected) {
-        dropDetected = false;
+    // Reset when phone is stable
+    if (magnitude < 12 && impactDetected) {
+        impactDetected = false;
     }
-
-    lastMagnitude = magnitude;
 }
+
 
 
 function rotationChange(rotx, roty, rotz) {}
