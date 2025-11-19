@@ -51,7 +51,7 @@ torpedo.createDSP(audioContext, 1024)
 //
 //==========================================================================================
 
-let dropThreshold = 0.5; // g units; adjust for sensitivity
+let dropThreshold = 5; // g units; adjust for sensitivity
 let dropDetected = false;
 
 function accelerationChange(accx, accy, accz) {
