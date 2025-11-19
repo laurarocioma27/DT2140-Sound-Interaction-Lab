@@ -12,7 +12,7 @@ let dspNodeParams = null;
 let jsonParams = null;
 
 // Change here to ("tuono") depending on your wasm file name
-const dspName = "church_bell";
+const dspName = "door";
 const instance = new FaustWasm2ScriptProcessor(dspName);
 
 // output to window or npm package module
@@ -25,7 +25,7 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change tuono with brass if you use brass.wasm
-church_bell.createDSP(audioContext, 1024)
+door.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
         dspNode.connect(audioContext.destination);
@@ -55,11 +55,58 @@ function accelerationChange(accx, accy, accz) {
     // playAudio()
 }
 
+let lastRotX = null;
+let lastTime = null;
+
+// Adjust if your device axis is different
+const OPEN_THRESHOLD = 1.0;     // degrees/s – minimum movement to trigger
+const MAX_SPEED = 720;          // deg/s → mapped to force=1
+
+
 function rotationChange(rotx, roty, rotz) {
+    if (!dspNode) return;
+
+    const now = millis();
+
+    if (lastRotX === null) {
+        lastRotX = rotx;
+        lastTime = now;
+        return;
+    }
+
+    // Compute delta
+    let deltaX = rotx - lastRotX;
+
+    // handle wrap-around
+    if (deltaX > 180) deltaX -= 360;
+    if (deltaX < -180) deltaX += 360;
+
+    const dt = (now - lastTime) / 1000; // seconds
+    if (dt <= 0) return;
+
+    const angularSpeed = Math.abs(deltaX / dt); // deg/s
+
+    // Only trigger if moving
+    if (angularSpeed > OPEN_THRESHOLD) {
+
+        const force = Math.min(angularSpeed / MAX_SPEED, 1);
+
+        // ⚡ Trigger & scale door sound
+        dspNode.setParamValue("/door/force", 1);       // impulse
+        dspNode.setParamValue("/door/force", force);   // scaled creak
+
+        // Debug
+        // console.log("speed:", angularSpeed, "force:", force);
+    }
+
+    lastRotX = rotx;
+    lastTime = now;
 }
 
+
+
 function mousePressed() {
-    playAudio(mouseX/windowWidth)
+    playAudio()
     // Use this for debugging from the desktop!
 }
 
@@ -102,8 +149,10 @@ function playAudio(pressure) {
     if (audioContext.state === 'suspended') {
         return;
     }
-    console.log(pressure)
-    dspNode.setParamValue("/brass/blower/pressure", pressure)
+     dspNode.setParamValue("/englishBell/gate", 1);
+  setTimeout(() => {
+    dspNode.setParamValue("/englishBell/gate", 0);
+  }, 100);
 }
 
 //==========================================================================================
