@@ -12,7 +12,7 @@ let dspNodeParams = null;
 let jsonParams = null;
 
 // Change here to ("tuono") depending on your wasm file name
-const dspName = "church_bell";
+const dspName = "torpedo";
 const instance = new FaustWasm2ScriptProcessor(dspName);
 
 // output to window or npm package module
@@ -25,7 +25,7 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change tuono with brass if you use brass.wasm
-church_bell.createDSP(audioContext, 1024)
+torpedo.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
         dspNode.connect(audioContext.destination);
@@ -51,9 +51,26 @@ church_bell.createDSP(audioContext, 1024)
 //
 //==========================================================================================
 
+let dropThreshold = 0.5; // g units; adjust for sensitivity
+let dropDetected = false;
+
 function accelerationChange(accx, accy, accz) {
-    // playAudio()
+    // Compute total acceleration magnitude
+    let totalAcc = Math.sqrt(accx*accx + accy*accy + accz*accz);
+
+    // If total acceleration is very small, we assume free fall
+    if (totalAcc < dropThreshold && !dropDetected) {
+        dropDetected = true;
+        console.log("Free fall detected! totalAcc:", totalAcc);
+        playAudio(); // trigger your drop sound
+    }
+
+    // Reset drop detection once acceleration returns to normal
+    if (totalAcc > 1.0) { // normal gravity
+        dropDetected = false;
+    }
 }
+
 
 function rotationChange(rotx, roty, rotz) {
 }
@@ -66,6 +83,7 @@ function mousePressed() {
 function deviceMoved() {
     movetimer = millis();
     statusLabels[2].style("color", "pink");
+
 }
 
 function deviceTurned() {
@@ -122,8 +140,10 @@ function playAudio() {
     if (audioContext.state === 'suspended') {
         return;
     }
-    dspNode.setParamValue("/engine/gate", 1)
-    setTimeout(() => { dspNode.setParamValue("/engine/gate", 0) }, 100);
+    dspNode.setParamValue("/torpedo/gate", 1)
+    if (dropDetected === false){
+        setTimeout(() => { dspNode.setParamValue("/torpedo/gate", 0) }, 50);}
+    
 }
 
 //==========================================================================================
