@@ -55,7 +55,7 @@ function accelerationChange(accx, accy, accz) {
     // playAudio()
 }
 
-let lastRotX = null;
+let lastRotY = null;
 let lastTime = null;
 
 // Adjust if your device axis is different
@@ -68,23 +68,23 @@ function rotationChange(rotx, roty, rotz) {
 
     const now = millis();
 
-    if (lastRotX === null) {
-        lastRotX = rotx;
+    if (lastRotY === null) {
+        lastRotY = roty;
         lastTime = now;
         return;
     }
 
     // Compute delta
-    let deltaX = rotx - lastRotX;
+    let deltaY = roty - lastRotY;
 
     // handle wrap-around
-    if (deltaX > 180) deltaX -= 360;
-    if (deltaX < -180) deltaX += 360;
+    if (deltaY > 180) deltaY -= 360;
+    if (deltaY < -180) deltaY += 360;
 
     const dt = (now - lastTime) / 1000; // seconds
     if (dt <= 0) return;
 
-    const angularSpeed = Math.abs(deltaX / dt); // deg/s
+    const angularSpeed = Math.abs(deltaY / dt); // deg/s
 
     // Only trigger if moving
     if (angularSpeed > OPEN_THRESHOLD) {
@@ -93,13 +93,13 @@ function rotationChange(rotx, roty, rotz) {
 
         // ⚡ Trigger & scale door sound
         dspNode.setParamValue("/door/door/position", 1);       // impulse
-        dspNode.setParamValue("/door/position", force);   // scaled creak
+        dspNode.setParamValue("/door/door/position", force);   // scaled creak
 
         // Debug
         // console.log("speed:", angularSpeed, "force:", force);
     }
 
-    lastRotX = rotx;
+    lastRotY = roty;
     lastTime = now;
 }
 
@@ -152,6 +152,8 @@ function playAudio(pressure) {
         return;
     }
     dspNode.setParamValue("/door/door/position", 0.9);       // impulse
+    setTimeout(() => { dspNode.setParamValue("/door/door/position", 0) }, 100);
+
 }
 
 //==========================================================================================
