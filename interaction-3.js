@@ -63,21 +63,6 @@ const DEG = 3.0
 const OPEN_THRESHOLD = 5.0;     // degrees/s – minimum movement to trigger
 const MAX_SPEED = 720;          // deg/s → mapped to force=1
 
-function triggerDoorCreak(force) {
-    if (!dspNode) return;
-
-    // keep force in safe range (0–0.5)
-    const pos = 0.05 + force * 0.25;
-
-    // short physical-style movement burst
-    dspNode.setParamValue("/door/volume", 0.5)
-    dspNode.setParamValue("/door/door/position", 0);
-    setTimeout(() => dspNode.setParamValue("/door/door/position", pos), 10);
-    setTimeout(() => dspNode.setParamValue("/door/door/position", pos * 0.5), 40);
-    setTimeout(() => dspNode.setParamValue("/door/door/position", pos * 0.25), 70);
-    setTimeout(() => dspNode.setParamValue("/door/door/position", 0), 120);
-}
-
 function rotationChange(rotx, roty, rotz) {
     if (!dspNode) return;
 
@@ -107,8 +92,7 @@ function rotationChange(rotx, roty, rotz) {
         const force = Math.min(angularSpeed / MAX_SPEED, 1);
 
         // ⚡ Trigger & scale door sound
-        triggerDoorCreak(force);
-
+        dspNode.setParamValue("/door/door/position", force); 
         //dspNode.setParamValue("/door/volume", force);   // scaled creak
 
     }
