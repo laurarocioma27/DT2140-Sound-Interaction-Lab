@@ -103,7 +103,7 @@ function deviceMoved() {
 }
 
 function deviceTurned() {
-    //threshVals[1] = turnAxis;
+    threshVals[1] = turnAxis;
     //if (turnAxis === 'Z') {
     //playAudio()
   }
@@ -112,7 +112,7 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    //playAudio();
+    playAudio();
 }
 
 function getMinMaxParam(address) {
@@ -145,7 +145,6 @@ function playAudio() {
     // For example if you change to a bell sound, here you could use "/churchBell/gate" instead of
     // "/thunder/rumble".
     dspNode.setParamValue("/engine/gate", 1)
-    dspNode.setParamValue("/engine/volume", 5.0)
     setTimeout(() => { dspNode.setParamValue("/engine/gate", 0) }, 100);
 }
 
