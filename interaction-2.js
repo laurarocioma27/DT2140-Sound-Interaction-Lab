@@ -13,7 +13,7 @@ let jsonParams = null;
 
 let freeFallStart = null;
 const FREEFALL_THRESHOLD = 3; // acceleration below this = falling
-const FREEFALL_TIME = 350;
+const FREEFALL_TIME = 150;
 
 // Change here to ("tuono") depending on your wasm file name
 const dspName = "bells";
@@ -53,36 +53,24 @@ bells.createDSP(audioContext, 1024).then((node) => {
 //
 //==========================================================================================
 
-let lastMagnitude = null;
-let dropDetected = false;
-
 function accelerationChange(accx, accy, accz) {
-    if (!dspNode) return;
+  const magnitude = Math.sqrt(accx * accx + accy * accy + accz * accz);
 
-    const magnitude = Math.sqrt(accx*accx + accy*accy + accz*accz);
-
-    if (lastMagnitude !== null) {
-        const delta = lastMagnitude - magnitude;
-
-        // If magnitude suddenly drops a lot → free fall
-        if (delta > 5 && !dropDetected) { // 5 m/s² drop is a good threshold
-            dropDetected = true;
-            console.log("Drop detected! delta:", delta.toFixed(2));
-
-            dspNode.setParamValue("/bells/gate", 1);
-            dspNode.setParamValue("/bells/volume", 1.0);
-            setTimeout(() => dspNode.setParamValue("/bells/gate", 0), 150);
-        }
+  // If below threshold → possible free-fall
+  if (magnitude < FREEFALL_THRESHOLD) {
+    if (freeFallStart === null) {
+      freeFallStart = millis(); // start timer
     }
-
-    // Reset when phone stops moving
-    if (magnitude > 9 && dropDetected) {
-        dropDetected = false;
+    // If falling long enough → trigger sound
+    else if (millis() - freeFallStart > FREEFALL_TIME) {
+      playAudio(); // ring bell
+      freeFallStart = null; // reset
     }
-
-    lastMagnitude = magnitude;
+  } else {
+    // Not falling anymore → reset
+    freeFallStart = null;
+  }
 }
-
 
 function rotationChange(rotx, roty, rotz) {}
 
