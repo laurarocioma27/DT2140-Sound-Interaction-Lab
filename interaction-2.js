@@ -12,8 +12,8 @@ let dspNodeParams = null;
 let jsonParams = null;
 
 let freeFallStart = null;
-const FREEFALL_THRESHOLD = 1; // acceleration below this = falling
-const FREEFALL_TIME = 250;
+const FREEFALL_THRESHOLD = 3; // acceleration below this = falling
+const FREEFALL_TIME = 350;
 
 // Change here to ("tuono") depending on your wasm file name
 const dspName = "bells";
