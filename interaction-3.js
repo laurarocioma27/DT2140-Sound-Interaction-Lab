@@ -90,11 +90,10 @@ function rotationChange(rotx, roty, rotz) {
     if (angularSpeed > OPEN_THRESHOLD && (roty > DEG || roty < -DEG)) {
 
         const force = Math.min(angularSpeed / MAX_SPEED, 1);
+        const shaped = Math.pow(force, 3);
 
         // ⚡ Trigger & scale door sound
-        setTimeout(() => dspNode.setParamValue("/door/door/position", force), 50);
-
-        //dspNode.setParamValue("/door/volume", force);   // scaled creak
+        dspNode.setParamValue("/door/volume", shaped);   // scaled creak
 
     }
 
