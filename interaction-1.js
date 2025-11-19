@@ -107,7 +107,7 @@ function deviceTurned() {
     //if (turnAxis === 'Z') {
     //playAudio()
   }
-}
+
 
 function deviceShaken() {
     shaketimer = millis();
