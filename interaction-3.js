@@ -59,7 +59,7 @@ let lastRotY = null;
 let lastTime = null;
 
 // Adjust if your device axis is different
-const OPEN_THRESHOLD = 1.0;     // degrees/s – minimum movement to trigger
+const OPEN_THRESHOLD = 3.0;     // degrees/s – minimum movement to trigger
 const MAX_SPEED = 720;          // deg/s → mapped to force=1
 
 function triggerDoorCreak(force) {
@@ -69,6 +69,7 @@ function triggerDoorCreak(force) {
     const pos = 0.05 + force * 0.25;
 
     // short physical-style movement burst
+    dspNode.setParamValue("/door/volume", 0.2)
     dspNode.setParamValue("/door/door/position", 0);
     setTimeout(() => dspNode.setParamValue("/door/door/position", pos), 10);
     setTimeout(() => dspNode.setParamValue("/door/door/position", pos * 0.5), 40);
