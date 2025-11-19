@@ -12,7 +12,7 @@ let dspNodeParams = null;
 let jsonParams = null;
 
 // Change here to ("tuono") depending on your wasm file name
-const dspName = "tuono";
+const dspName = "engine";
 const instance = new FaustWasm2ScriptProcessor(dspName);
 
 // output to window or npm package module
@@ -25,7 +25,7 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change tuono with brass if you use brass.wasm
-tuono.createDSP(audioContext, 1024)
+engine.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
         dspNode.connect(audioContext.destination);
@@ -55,8 +55,42 @@ function accelerationChange(accx, accy, accz) {
     // playAudio()
 }
 
+
+let lastRotZ = null;
+let lastTime = null;
+
 function rotationChange(rotx, roty, rotz) {
+    if (!dspNode) return;
+
+    const now = millis();
+
+    if (lastRotZ === null) {
+        lastRotZ = rotz;
+        lastTime = now;
+        return;
+    }
+
+    // Compute rotation difference
+    let deltaZ = rotz - lastRotZ;
+    // Handle wrap-around at 360°
+    if (deltaZ > 180) deltaZ -= 360;
+    if (deltaZ < -180) deltaZ += 360;
+
+    const deltaTime = (now - lastTime) / 1000; // seconds
+    const angularSpeed = Math.abs(deltaZ / deltaTime); // deg/s
+
+    // Map speed to 0–1 for volume (adjust 720 if needed)
+    const normalizedVolume = Math.min(angularSpeed / 720, 1);
+
+    // Set Faust parameters (engine sound)
+    dspNode.setParamValue("/engine/gate", 1); // trigger sound
+    dspNode.setParamValue("/engine/volume", normalizedVolume); // scale volume with speed
+
+    // Update last values
+    lastRotZ = rotz;
+    lastTime = now;
 }
+
 
 function mousePressed() {
     playAudio()
@@ -69,8 +103,12 @@ function deviceMoved() {
 }
 
 function deviceTurned() {
-    threshVals[1] = turnAxis;
+    //threshVals[1] = turnAxis;
+    if (turnAxis === 'Z') {
+    playAudio()
+  }
 }
+
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
@@ -106,8 +144,9 @@ function playAudio() {
     // them printed on the console of your browser when you load the page)
     // For example if you change to a bell sound, here you could use "/churchBell/gate" instead of
     // "/thunder/rumble".
-    dspNode.setParamValue("/thunder/rumble", 1)
-    setTimeout(() => { dspNode.setParamValue("/thunder/rumble", 0) }, 100);
+    dspNode.setParamValue("/engine/gate", 1)
+    dspNode.setParamValue("/engine/volume", 5.0)
+    setTimeout(() => { dspNode.setParamValue("/engine/gate", 0) }, 100);
 }
 
 //==========================================================================================

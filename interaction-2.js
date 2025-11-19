@@ -12,7 +12,7 @@ let dspNodeParams = null;
 let jsonParams = null;
 
 // Change here to ("tuono") depending on your wasm file name
-const dspName = "bells";
+const dspName = "church_bell";
 const instance = new FaustWasm2ScriptProcessor(dspName);
 
 // output to window or npm package module
@@ -25,7 +25,7 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change tuono with brass if you use brass.wasm
-bells.createDSP(audioContext, 1024)
+church_bell.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
         dspNode.connect(audioContext.destination);
@@ -59,7 +59,7 @@ function rotationChange(rotx, roty, rotz) {
 }
 
 function mousePressed() {
-    // playAudio()
+    playAudio()
     // Use this for debugging from the desktop!
 }
 
@@ -85,6 +85,26 @@ function getMinMaxParam(address) {
     return [exampleMinValue, exampleMaxValue]
 }
 
+let lastPlayTime = 0;       // cooldown to prevent repeated triggers
+
+function devicePointed(alpha, beta, gamma) {
+    const now = millis();
+    
+    // alpha is the compass heading (0–360°)
+    const diff = Math.abs(alpha - targetDirection);
+    
+    // handle wrap-around (e.g., 350° is close to 0°)
+    const wrappedDiff = Math.min(diff, 360 - diff);
+
+    if (wrappedDiff < threshold && now - lastPlayTime > 500) {
+        playAudio();  // trigger your sound
+        lastPlayTime = now;
+    }
+
+    // Optional: log for debugging
+    console.log("Heading:", alpha.toFixed(0), "Diff:", wrappedDiff);
+}
+
 //==========================================================================================
 // AUDIO INTERACTION
 //------------------------------------------------------------------------------------------
@@ -102,8 +122,8 @@ function playAudio() {
     if (audioContext.state === 'suspended') {
         return;
     }
-    dspNode.setParamValue("/englishBell/gate", 1)
-    setTimeout(() => { dspNode.setParamValue("/englishBell/gate", 0) }, 100);
+    dspNode.setParamValue("/engine/gate", 1)
+    setTimeout(() => { dspNode.setParamValue("/engine/gate", 0) }, 100);
 }
 
 //==========================================================================================
