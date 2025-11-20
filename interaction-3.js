@@ -93,6 +93,7 @@ function rotationChange(rotx, roty, rotz) {
 
         // Trigger & scale door sound
         dspNode.setParamValue("/door/volume", force);   // scaled creak
+        dspNode.setParamValue("/door/door/force", force)
 
     }
 
