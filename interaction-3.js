@@ -91,7 +91,7 @@ function rotationChange(rotx, roty, rotz) {
 
         const force = Math.min(angularSpeed / MAX_SPEED, 1);
 
-        // ⚡ Trigger & scale door sound
+        // Trigger & scale door sound
         dspNode.setParamValue("/door/volume", force);   // scaled creak
 
     }
