@@ -74,32 +74,39 @@ function rotationChange(rotx, roty, rotz) {
         return;
     }
 
-    // Compute delta
     let deltaY = roty - lastRotY;
 
-    // handle wrap-around
+    // Wrap-around fix
     if (deltaY > 180) deltaY -= 360;
     if (deltaY < -180) deltaY += 360;
 
-    const dt = (now - lastTime) / 1000; // seconds
+    const dt = (now - lastTime) / 1000;
     if (dt <= 0) return;
 
-    const angularSpeed = Math.abs(deltaY / dt); // deg/s
+    const angularSpeed = Math.abs(deltaY / dt);
 
-    // Only trigger if moving
     if (angularSpeed > OPEN_THRESHOLD) {
 
+        // force = 0 → 1
         const force = Math.min(angularSpeed / MAX_SPEED, 1);
 
-        // Trigger & scale door sound
-        dspNode.setParamValue("/door/volume", force);   // scaled creak
-        dspNode.setParamValue("/door/door/position", force)
+        // Map to DSP expected 0 → 0.5
+        const pos = force * 0.5;
 
+        dspNode.setParamValue("/door/door/position", pos);
+        dspNode.setParamValue("/door/volume", 0.7);
+
+        // Smooth decay back to 0 after movement
+        setTimeout(() => {
+            dspNode.setParamValue("/door/door/position", 0);
+            dspNode.setParamValue("/door/volume", 0);
+        }, 80);
     }
 
     lastRotY = roty;
     lastTime = now;
 }
+
 
 
 
