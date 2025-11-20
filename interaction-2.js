@@ -73,10 +73,10 @@ function accelerationChange(accx, accy, accz) {
         impactDetected = true;
         console.log("Impact detected! magnitude:", magnitude.toFixed(2));
 
-        dspNode.setParamValue("/englishBell/gate", 1);
+        dspNode.setParamValue("/churchBell/gate", 1);
 
         setTimeout(() => {
-            dspNode.setParamValue("/englishBell/gate", 0);
+            dspNode.setParamValue("/churchBell/gate", 0);
         }, 100);
     }
 
@@ -135,9 +135,9 @@ function playAudio() {
   if (audioContext.state === "suspended") {
     return;
   }
-  dspNode.setParamValue("/englishBell/gate", 1);
+  dspNode.setParamValue("/churchBell/gate", 1);
   setTimeout(() => {
-    dspNode.setParamValue("/englishBell/gate", 0);
+    dspNode.setParamValue("/churchBell/gate", 0);
   }, 100);
 }
 
