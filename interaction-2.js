@@ -16,7 +16,7 @@ const FREEFALL_THRESHOLD = 3; // acceleration below this = falling
 const FREEFALL_TIME = 150;
 
 // Change here to ("tuono") depending on your wasm file name
-const dspName = "church_bell";
+const dspName = "churchBell";
 const instance = new FaustWasm2ScriptProcessor(dspName);
 
 // output to window or npm package module
@@ -29,7 +29,7 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change tuono with brass if you use brass.wasm
-church_bell.createDSP(audioContext, 1024).then((node) => {
+churchBell.createDSP(audioContext, 1024).then((node) => {
   dspNode = node;
   dspNode.connect(audioContext.destination);
   console.log("params: ", dspNode.getParams());
