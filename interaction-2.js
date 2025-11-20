@@ -68,19 +68,23 @@ function accelerationChange(accx, accy, accz) {
 
     const magnitude = Math.sqrt(accx*accx + accy*accy + accz*accz);
 
-    // Trigger when acceleration spikes above threshold (phone hits something)
+    // Impact trigger
     if (magnitude > IMPACT_THRESHOLD && !impactDetected) {
         impactDetected = true;
         console.log("Impact detected! magnitude:", magnitude.toFixed(2));
 
         dspNode.setParamValue("/englishBell/gate", 1);
-        setTimeout(() => dspNode.setParamValue("/englishBell/gate", 0), 150);
+
+        setTimeout(() => {
+            dspNode.setParamValue("/englishBell/gate", 0);
+        }, 100);
     }
 
-    // Reset when phone is stable
-    if (magnitude < 12 && impactDetected) {
+    // Reset when returning to roughly Earth's gravity
+    if (magnitude > 7 && magnitude < 12) {
         impactDetected = false;
     }
+
 }
 
 
