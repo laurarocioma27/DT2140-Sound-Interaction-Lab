@@ -105,7 +105,7 @@ function rotationChange(rotx, roty, rotz) {
 function mousePressed() {
     console.log("PARAMS:", dspNode.getParams());
 
-    playAudio()
+    //playAudio()
     // Use this for debugging from the desktop!
 }
 
