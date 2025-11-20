@@ -59,7 +59,7 @@ let lastRotY = null;
 let lastTime = null;
 
 // Adjust if your device axis is different
-const OPEN_THRESHOLD = 1.0;     // degrees/s – minimum movement to trigger
+const OPEN_THRESHOLD = 0.5;     // degrees/s – minimum movement to trigger
 const MAX_SPEED = 720;          // deg/s → mapped to force=1
 force = 1
 
@@ -93,7 +93,7 @@ function rotationChange(rotx, roty, rotz) {
 
         // Trigger & scale door sound
         dspNode.setParamValue("/door/volume", force);   // scaled creak
-        dspNode.setParamValue("/door/door/force", force)
+        dspNode.setParamValue("/door/door/position", force)
 
     }
 
