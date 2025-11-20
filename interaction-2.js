@@ -56,34 +56,8 @@ churchBell.createDSP(audioContext, 1024).then((node) => {
 let lastMagnitude = null;
 let dropDetected = false;
 
-// Thresholds
-const FREEFALL_DROP = 5;  // sudden drop in m/s² to count as fall
-const MIN_ACCEL = 2;      // magnitude below this counts as free-fall
-
-let impactDetected = false;
-const IMPACT_THRESHOLD = 15; // acceleration in m/s² to count as impact
-
 function accelerationChange(accx, accy, accz) {
     if (!dspNode) return;
-
-    const magnitude = Math.sqrt(accx*accx + accy*accy + accz*accz);
-
-    // Impact trigger
-    if (magnitude > IMPACT_THRESHOLD && !impactDetected) {
-        impactDetected = true;
-        console.log("Impact detected! magnitude:", magnitude.toFixed(2));
-
-        dspNode.setParamValue("/churchBell/gate", 1);
-
-        setTimeout(() => {
-            dspNode.setParamValue("/churchBell/gate", 0);
-        }, 100);
-    }
-
-    // Reset when returning to roughly Earth's gravity
-    if (magnitude > 7 && magnitude < 12) {
-        impactDetected = false;
-    }
 
 }
 
@@ -107,7 +81,7 @@ function deviceTurned() {
 function deviceShaken() {
   shaketimer = millis();
   statusLabels[0].style("color", "pink");
-  //playAudio();
+  playAudio();
 }
 
 function getMinMaxParam(address) {
