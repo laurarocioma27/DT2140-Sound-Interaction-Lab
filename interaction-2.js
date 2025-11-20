@@ -73,9 +73,8 @@ function accelerationChange(accx, accy, accz) {
         impactDetected = true;
         console.log("Impact detected! magnitude:", magnitude.toFixed(2));
 
-        dspNode.setParamValue("/bells/gate", 1);
-        dspNode.setParamValue("/bells/volume", 1.0);
-        setTimeout(() => dspNode.setParamValue("/bells/gate", 0), 150);
+        dspNode.setParamValue("/englishBell/gate", 1);
+        setTimeout(() => dspNode.setParamValue("/englishBell/gate", 0), 150);
     }
 
     // Reset when phone is stable
